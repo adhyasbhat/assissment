@@ -23,4 +23,4 @@ mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTop
   
   const Request = mongoose.model('Request', requestSchema);
   const Product = mongoose.model('Product', productSchema);
-module.exports = Product;
+module.exports = {Request,Product};
