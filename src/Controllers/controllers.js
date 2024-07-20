@@ -229,7 +229,7 @@ const processImages = async (products, requestId) => {
     request.updatedAt = new Date();
     await request.save();
 
-    triggerWebhook(requestId, processedProducts);
+    // triggerWebhook(requestId, processedProducts);
   } catch (err) {
     console.error(err);
     const request = await Request.findOne({ requestId });
