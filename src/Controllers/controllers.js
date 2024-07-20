@@ -221,7 +221,14 @@ const processImages = async (products, requestId) => {
 
       product.outputImageUrls = outputImgURLs.filter(url => url !== null);
       product.updatedAt = new Date();
-      await product.save();
+      console.log("Product to save:", product);
+
+      await product.save().catch(err => {
+        console.error("Error saving product:", err);
+      });
+
+      await createCSVFile(products, requestId);  // Create the CSV file
+
       return product;
     }));
 
@@ -239,7 +246,27 @@ const processImages = async (products, requestId) => {
   }
 };
 
+const createCSVFile = async (products, requestId) => {
+  try {
+    const fields = ['serialNumber', 'productName', 'inputImageUrls', 'outputImageUrls', 'createdAt', 'updatedAt'];
+    const opts = { fields, delimiter: ',' };
+    const csvData = json2csv(products, opts);
+
+    const outputPath = path.join(__dirname, '..', 'exports', `${requestId}_products.csv`);
+
+    // Ensure the directory exists
+    await fs.promises.mkdir(path.join(__dirname, '..', 'exports'), { recursive: true });
+
+    // Write the CSV file
+    await fs.promises.writeFile(outputPath, csvData);
+    console.log(`CSV file created at: ${outputPath}`);
+  } catch (err) {
+    console.error("Error creating CSV file:", err);
+  }
+};
+
 const compressImage = async (img) => {
+  console.log(sharp(img).jpeg({ quality: 50 }).toBuffer())
   return sharp(img).jpeg({ quality: 50 }).toBuffer();
 };
 
@@ -248,7 +275,12 @@ const generateFileName = () => {
 };
 
 const uploadImage = async (imageData, fileName) => {
-  const outputPath = path.join(__dirname, '..', 'uploads', 'processed', fileName);
+  const dirPath = path.join(__dirname, '..', 'uploads', 'processed');
+
+  // Ensure the directory exists
+  await fs.promises.mkdir(dirPath, { recursive: true });
+
+  const outputPath = path.join(dirPath, fileName);
   await fs.promises.writeFile(outputPath, imageData);
   return outputPath;
 };
