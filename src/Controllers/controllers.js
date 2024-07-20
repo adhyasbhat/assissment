@@ -248,7 +248,7 @@ const processImages = async (products, requestId) => {
 
 const createCSVFile = async (products, requestId) => {
   try {
-    const fields = ['serialNumber', 'productName', 'inputImageUrls', 'outputImageUrls', 'createdAt', 'updatedAt'];
+    const fields = ['S. No.', 'Product Name', 'Input Image Urls', 'Output Image Urls', 'createdAt', 'updatedAt'];
     const opts = { fields, delimiter: ',' };
     const csvData = json2csv(products, opts);
 
